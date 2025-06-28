@@ -3,6 +3,12 @@ export const Veggies = [
         id: 1,
         title: "Green chilli",
         image: "https://c4.wallpaperflare.com/wallpaper/147/545/208/nature-basket-apples-grapes-wallpaper-preview.jpg",
+        images: [
+            "https://www.shutterstock.com/image-photo/chili-pepper-isolated-on-white-260nw-1305104722.jpg",
+            "https://www.shutterstock.com/image-photo/image-closeup-pile-green-chillies-260nw-2529426775.jpg",
+            "https://eu.dookan.com/cdn/shop/products/Dookan_Green_Chilli_Hari_Mirch_272ac61f-7665-4bf9-947b-d78729972bed.png?v=1647341408",
+            "https://m.media-amazon.com/images/I/61rg6AeWHyL._AC_UF1000,1000_QL80_.jpg"
+        ],
         price: 29,
         originalprice: 35,
         ratting: 3.6,
@@ -292,46 +298,51 @@ export const Veggies = [
 export const Categorisall = [
     {
         id: 1,
-        category: "lunch",
+        category: "All",
         image: "https://img.freepik.com/free-photo/top-view-table-full-delicious-food-composition_23-2149141352.jpg?semt=ais_hybrid&w=740",
     },
     {
         id: 2,
+        category: "lunch",
+        image: "https://img.freepik.com/free-photo/top-view-table-full-delicious-food-composition_23-2149141352.jpg?semt=ais_hybrid&w=740",
+    },
+    {
+        id: 3,
         category: "snacks",
         image: "https://static.vecteezy.com/system/resources/previews/013/934/267/non_2x/indian-tea-time-snacks-in-group-sev-chivda-farsan-mixture-bakarwadi-served-in-different-bowls-free-photo.jpg",
     },
     {
-        id: 3,
+        id: 4,
         category: "veggies",
         image: "https://c4.wallpaperflare.com/wallpaper/147/545/208/nature-basket-apples-grapes-wallpaper-preview.jpg",
     },
     {
-        id: 4,
+        id: 5,
         category: "salads",
         image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKD2OLIXOiCopVEQoMJIvSGt2NJVIVmQ288Q&s",
     }, {
-        id: 5,
+        id: 6,
         category: "nonveg",
         image: "https://c1.wallpaperflare.com/preview/332/477/68/meat-lamb-t-bone-steak-hille-gourmets.jpg",
     },
     {
-        id: 6,
+        id: 7,
         category: "Bread & Eggs",
         image: "https://media.istockphoto.com/id/177360383/photo/cheese-bread-milk-and-eggs.jpg?s=612x612&w=0&k=20&c=8LN01R9z5tnalaOCj9rHhN_ut7bN3KBOBS-cVEDGVi8=",
     },
     {
-        id: 7,
+        id: 8,
         category: "masala",
         image: "https://5.imimg.com/data5/SELLER/Default/2023/11/357616545/BT/EA/IL/38463093/images-500x500.jpg",
     },
     {
-        id: 8,
+        id: 9,
         category: "breakfast",
         image: "https://img.freepik.com/free-photo/toast-half-fried-egg-salad-bacon-gray-plate-near-tea-cup_23-2148067057.jpg?semt=ais_hybrid&w=740",
 
     },
     {
-        id: 9,
+        id: 10,
         category: "Dinners",
         image: "https://thumbs.dreamstime.com/b/assortment-indian-dishes-dinner-butter-chicken-tikka-masala-rice-naan-basmati-162829221.jpg",
     }

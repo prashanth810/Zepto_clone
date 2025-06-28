@@ -28,6 +28,7 @@ import Singleproduct from '../components/single products/Singleproduct';
 import Landingpage from '../components/loading/Landingpage';
 import Search from '../screens/Search';
 import LoginScreen from '../login page/LoginScreen';
+import Profilesetting from '../screens/profile setting/Profilesetting';
 
 const Stack = createStackNavigator();
 
@@ -120,6 +121,13 @@ const StackNavigator = () => {
           component={Profile}
           options={{ headerShown: false }}
         />
+
+        <Stack.Screen
+          name='profileseting'
+          component={Profilesetting}
+          options={{ headerShown: false }}
+        />
+
 
         <Stack.Screen
           name="paymentmanagement"

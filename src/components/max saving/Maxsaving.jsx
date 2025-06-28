@@ -14,8 +14,7 @@ const Maxsaving = () => {
         return (
             <TouchableOpacity
                 style={[styles.card, isActive && styles.acivecard]}
-                onPress={() => setActiveid(item.id)}
-            >
+                onPress={() => setActiveid(item.id)}>
                 <Image source={{ uri: item.image }} style={styles.image} />
                 <Text style={styles.categorytext}>{item.category}</Text>
             </TouchableOpacity>
@@ -43,11 +42,13 @@ const Maxsaving = () => {
                         renderItem={(item) => rendercategories(item)}
                         horizontal
                         contentContainerStyle={styles.listcontainer}
+                        ItemSeparatorComponent={() => {
+                            return (<View style={{ width: 20 }} />)
+                        }}
                     />
                 </View>
 
             </View>
-
 
             <Selectedcategorydata activeid={activeid} />
 
@@ -102,7 +103,6 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderBottomWidth: 2,
         borderBottomColor: "transparent",
-        marginRight: 20, // ✅ Add this line
     },
     listcontainer: {
         paddingHorizontal: 10,

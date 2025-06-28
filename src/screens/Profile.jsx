@@ -12,7 +12,10 @@ import Icon from 'react-native-vector-icons/Ionicons'; // Native vector icons
 const Profile = () => {
   const [pass, setPass] = useState(true);
   const [notification, setNotification] = useState(true);
+  const [freecash, setFreecash] = useState(125);
   const navigation = useNavigation();
+
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}
       style={{
@@ -178,7 +181,7 @@ const Profile = () => {
           style={{
             // marginTop:pass ? 0 : 40,
             backgroundColor: '#ebfaf8',
-            borderWidth: 1,
+            borderWidth: 0.5,
             borderColor: '#38635e',
             borderRadius: 8,
             marginTop: 10,
@@ -216,7 +219,7 @@ const Profile = () => {
             </Text>
             <TouchableOpacity
               style={{
-                borderWidth: 1,
+                borderWidth: 0.5,
                 borderColor: '#38635e',
                 paddingHorizontal: 10,
                 paddingVertical: 6,
@@ -232,41 +235,80 @@ const Profile = () => {
           </View>
         </View>
 
-        <View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingVertical: 13,
-              backgroundColor: '#ebfaf8',
-              marginTop: 10,
-              borderColor: '#38635e',
-              paddingHorizontal: 10,
-              borderWidth: 1,
-              borderColor: '#38635e',
-              borderRadius: 10,
-            }}>
-            <Text>
-              <Ionicons name="gift-sharp" size="22" color="#f53d05" />
-              <Text> Free Cash </Text>
-            </Text>
-            <TouchableOpacity
+
+        {freecash ? (
+
+          <View>
+            <TouchableOpacity onPress={() => { navigation.navigate("addammount") }}
               style={{
-                borderWidth: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingVertical: 13,
+                backgroundColor: '#ebfaf8',
+                marginTop: 10,
                 borderColor: '#38635e',
                 paddingHorizontal: 10,
-                paddingVertical: 6,
+                borderWidth: 0.5,
+                borderColor: '#38635e',
                 borderRadius: 10,
               }}>
-              <TouchableOpacity onPress={() => { navigation.navigate("addammount") }}>
+              <Text>
+                <Ionicons name="gift-sharp" size="22" color="#f53d05" />
+                <Text> Free Cash </Text>
+              </Text>
+              <TouchableOpacity
+                style={{
+                  // borderWidth: 0.5,
+                  borderColor: '#38635e',
+                  paddingHorizontal: 10,
+                  paddingVertical: 6,
+                  borderRadius: 10,
+                }}>
                 <Text style={{ fontWeight: 700, color: '#38635e', fontSize: 12 }}>
-                  ₹125
+                  ₹{freecash}
                 </Text>
               </TouchableOpacity>
             </TouchableOpacity>
           </View>
-        </View>
+        ) : (
+
+          <View>
+            <TouchableOpacity onPress={() => { navigation.navigate("addammount") }}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingVertical: 13,
+                backgroundColor: '#ebfaf8',
+                marginTop: 10,
+                borderColor: '#38635e',
+                paddingHorizontal: 10,
+                borderWidth: 0.5,
+                borderColor: '#38635e',
+                borderRadius: 10,
+              }}>
+              <Text>
+                <Ionicons name="gift-sharp" size="22" color="#f53d05" />
+                <Text> Free Cash </Text>
+              </Text>
+              <TouchableOpacity
+                style={{
+                  // borderWidth: 0.5,
+                  borderColor: '#38635e',
+                  paddingHorizontal: 10,
+                  paddingVertical: 6,
+                  borderRadius: 10,
+                }}>
+                <Text style={{ fontWeight: 700, color: '#38635e', fontSize: 12 }}>
+                  ₹{freecash}
+                </Text>
+              </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
+        )}
+
+
 
         <View style={{ flexDirection: "row", alignItems: "center", marginTop: 10, justifyContent: "space-between", backgroundColor: "#e6e8e6", paddingVertical: 8, paddingHorizontal: 5, borderRadius: 10, }}>
           <View>
@@ -359,7 +401,7 @@ const Profile = () => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => { navigation.navigate("profile") }}>
+        <TouchableOpacity onPress={() => { navigation.navigate("profileseting") }}>
           <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
               <Text> <AntDesign name="user" color="#38635e" size="22" /> </Text>

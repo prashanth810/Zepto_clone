@@ -5,6 +5,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { styles } from '../../screens/styles';
+import { FlatList } from 'react-native-gesture-handler';
 
 const Singleproduct = () => {
     const route = useRoute();
@@ -28,6 +29,18 @@ const Singleproduct = () => {
                 source={{ uri: product.image }}
                 style={styles.productImage}
                 resizeMode="cover"
+            />
+
+            <FlatList
+                data={product.images}
+                renderItem={({ item }) => (
+                    <View>
+                        <Image source={{ uri: item }} width={100} height={100} />
+                    </View>
+                )}
+                keyExtractor={(item, i) => i.toString()}
+                horizontal
+                pagingEnabled
             />
 
             {/* Product Details */}
