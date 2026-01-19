@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Bottomnavigator from '../productdetails/Bottomnavigator';
@@ -29,32 +29,49 @@ import Landingpage from '../components/loading/Landingpage';
 import Search from '../screens/Search';
 import LoginScreen from '../login page/LoginScreen';
 import Profilesetting from '../screens/profile setting/Profilesetting';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Helpandsupport from '../components/orders/help and support/Helpandsupport';
+import Orderagain from '../components/orders/Orderagain';
+import Couponsoffers from '../components/coupons and offers/Couponsoffers';
+import Refundviewdetails from '../components/refunds/refund view details/Refundviewdetails';
 
 const Stack = createStackNavigator();
 
 const StackNavigator = () => {
+  const [loading, setLoading] = useState(false);
+  const [token, setToken] = useState("");
+
+  useEffect(() => {
+    checkingauthorized();
+  }, []);
+
+
+  const checkingauthorized = async () => {
+    setLoading(true);
+    const savedtoken = await AsyncStorage.getItem("token");
+    setToken(savedtoken);
+    setLoading(false);
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator
         // initialRouteName='login'
         screenOptions={{ headerShown: false }}>
-        {/* <Stack.Screen
-          name="bottomnavigator"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        /> */}
 
-        <Stack.Screen
-          name="bottomnavigator"
-          component={Bottomnavigator}
-          options={{ headerShown: false }}
-        />
-
-        <Stack.Screen
-          name="login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
+        {token ? (
+          <Stack.Screen
+            name="bottomnavigator"
+            component={Bottomnavigator}
+            options={{ headerShown: false }}
+          />
+        ) : (
+          <Stack.Screen
+            name="login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+        )}
 
         <Stack.Screen
           name="cart"
@@ -63,8 +80,20 @@ const StackNavigator = () => {
         />
 
         <Stack.Screen
+          name='orderagain'
+          component={Orderagain}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
           name="productdetails"
           component={Productdetails}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name='helpandsupport'
+          component={Helpandsupport}
           options={{ headerShown: false }}
         />
 
@@ -95,6 +124,27 @@ const StackNavigator = () => {
         <Stack.Screen
           name="managereferalls"
           component={Managerefers}
+          options={{ headerShown: false }}
+        />
+
+        {/* // gift and coupons  */}
+
+        <Stack.Screen
+          name='couponsandoffers'
+          component={Couponsoffers}
+          options={{ headerShown: false }}
+        />
+
+        {/* view refund details  */}
+        <Stack.Screen
+          name='viewrefunddetails'
+          component={Refundviewdetails}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name='abcd'
+          component={"abcd"}
           options={{ headerShown: false }}
         />
 

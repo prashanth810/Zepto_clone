@@ -1,5 +1,5 @@
 import { Linking, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -8,6 +8,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons'; // Native vector icons
+import Messages from 'react-native-vector-icons/Ionicons'; // Native vector icons
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = () => {
   const [pass, setPass] = useState(true);
@@ -15,11 +17,35 @@ const Profile = () => {
   const [freecash, setFreecash] = useState(125);
   const navigation = useNavigation();
 
+  const [token, setToken] = useState("");
+
+  useEffect(() => {
+    const getToken = async () => {
+      const savedToken = await AsyncStorage.getItem("token");
+      setToken(savedToken);
+    };
+    getToken();
+  }, []);
+
+  const handlelogout = async () => {
+    try {
+      await AsyncStorage.removeItem("token");
+      await AsyncStorage.removeItem("username");
+      await AsyncStorage.removeItem("userId");
+      setToken("");
+      navigation.navigate("login");
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
+
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}
       style={{
-        marginBottom: 65,
+        marginBottom: 20,
+        backgroundColor: "#f0fff9"
       }}>
       <View style={{ flex: 1, backgroundColor: "#fff" }}>
         {/* Custom Header */}
@@ -333,160 +359,178 @@ const Profile = () => {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => { navigation.navigate("orders") }}>
-          <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
-              <Text> <AntDesign name="shoppingcart" color="#38635e" size="22" /> </Text>
-              <Text> Orders </Text>
+        <View style={{ borderWidth: 1, borderColor: "#ededed", borderRadius: 10, marginTop: 15, paddingHorizontal: 8, backgroundColor: "#fff" }}>
+
+
+
+          <TouchableOpacity onPress={() => { navigation.navigate("orders") }}>
+            <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray", borderStyle: 'dashed', }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
+                <Text> <AntDesign name="shoppingcart" color="#38635e" size="22" /> </Text>
+                <Text> Orders </Text>
+              </View>
+
+              <View>
+                <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+              </View>
             </View>
+          </TouchableOpacity>
 
-            <View>
-              <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+          <TouchableOpacity onPress={() => { navigation.navigate("managereferalls") }}>
+            <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray", borderStyle: 'dashed', }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
+                <Text> <AntDesign name="hearto" color="#38635e" size="22" /> </Text>
+                <Text> Manage referrals </Text>
+              </View>
+
+              <View>
+                <Text> <FontAwesome name="angle-right" size="20" color="red" /></Text>
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => { navigation.navigate("managereferalls") }}>
-          <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
-              <Text> <AntDesign name="hearto" color="#38635e" size="22" /> </Text>
-              <Text> Manage referrals </Text>
+
+          <TouchableOpacity onPress={() => { navigation.navigate("helpandsupport") }}>
+            <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray", borderStyle: 'dashed', }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
+                <Text> <Messages name="chatbox-ellipses-outline" color="#38635e" size="22" /> </Text>
+                <Text> Help & support </Text>
+              </View>
+
+              <View>
+                <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+              </View>
             </View>
+          </TouchableOpacity>
 
-            <View>
-              <Text> <FontAwesome name="angle-right" size="20" color="red" /></Text>
+          <TouchableOpacity onPress={() => { navigation.navigate("customersupport") }}>
+            <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray", borderStyle: 'dashed', }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
+                <Text> <AntDesign name="customerservice" color="#38635e" size="22" /> </Text>
+                <Text> Customer & support </Text>
+              </View>
+
+              <View>
+                <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
 
 
-        <TouchableOpacity onPress={() => { navigation.navigate("customersupport") }}>
-          <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
-              <Text> <AntDesign name="customerservice" color="#38635e" size="22" /> </Text>
-              <Text> Customer & support </Text>
+          <TouchableOpacity onPress={() => { navigation.navigate("address") }}>
+            <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray", borderStyle: 'dashed', }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
+                <Text> <Ionicons name="location-outline" color="#38635e" size="22" /> </Text>
+                <Text> Address </Text>
+              </View>
+
+              <View>
+                <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+              </View>
             </View>
+          </TouchableOpacity>
 
-            <View>
-              <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+
+          <TouchableOpacity onPress={() => { navigation.navigate("refunds") }}>
+            <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray", borderStyle: 'dashed', }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
+                <Text> <AntDesign name="reload1" color="#38635e" size="22" /> </Text>
+                <Text> Refunds </Text>
+              </View>
+
+              <View>
+                <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
 
+          <TouchableOpacity onPress={() => { navigation.navigate("profileseting") }}>
+            <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray", borderStyle: 'dashed', }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
+                <Text> <AntDesign name="user" color="#38635e" size="22" /> </Text>
+                <Text> Profile </Text>
+              </View>
 
-        <TouchableOpacity onPress={() => { navigation.navigate("address") }}>
-          <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
-              <Text> <Ionicons name="location-outline" color="#38635e" size="22" /> </Text>
-              <Text> Address </Text>
+              <View>
+                <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+              </View>
             </View>
+          </TouchableOpacity>
 
-            <View>
-              <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+
+          <TouchableOpacity onPress={() => { navigation.navigate("paymentmanagement") }}>
+            <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray", borderStyle: 'dashed', }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
+                <Text> <AntDesign name="creditcard" color="#38635e" size="22" /> </Text>
+                <Text> Payment Management </Text>
+              </View>
+
+              <View>
+                <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
 
+          <TouchableOpacity onPress={() => { navigation.navigate("rewards") }}>
+            <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray", borderStyle: 'dashed', }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
+                <Text> <AntDesign name="gift" color="#38635e" size="22" /> </Text>
+                <Text> Rewards </Text>
+              </View>
 
-        <TouchableOpacity onPress={() => { navigation.navigate("refunds") }}>
-          <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
-              <Text> <AntDesign name="reload1" color="#38635e" size="22" /> </Text>
-              <Text> Refunds </Text>
+              <View>
+                <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+              </View>
             </View>
+          </TouchableOpacity>
 
-            <View>
-              <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+
+          <TouchableOpacity onPress={() => { navigation.navigate("settings") }}>
+            <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray", borderStyle: 'dashed', }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
+                <Text> <FontAwesome name="gears" color="#38635e" size="22" /> </Text>
+                <Text> Suggest Products </Text>
+              </View>
+
+              <View>
+                <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => { navigation.navigate("profileseting") }}>
-          <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
-              <Text> <AntDesign name="user" color="#38635e" size="22" /> </Text>
-              <Text> Profile </Text>
+
+          <TouchableOpacity onPress={() => { navigation.navigate("generalinfo") }}>
+            <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray", borderStyle: 'dashed', }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
+                <Text> <AntDesign name="infocirlceo" color="#38635e" size="22" /> </Text>
+                <Text> General info </Text>
+              </View>
+
+              <View>
+                <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+              </View>
             </View>
+          </TouchableOpacity>
 
-            <View>
-              <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+
+          <TouchableOpacity onPress={() => { navigation.navigate("notifications") }}>
+            <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
+                <Text> <AntDesign name="bells" color="#38635e" size="22" /> </Text>
+                <Text> Notifications </Text>
+              </View>
+
+              <View>
+                <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
 
-
-        <TouchableOpacity onPress={() => { navigation.navigate("paymentmanagement") }}>
-          <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
-              <Text> <AntDesign name="creditcard" color="#38635e" size="22" /> </Text>
-              <Text> Payment Management </Text>
-            </View>
-
-            <View>
-              <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => { navigation.navigate("rewards") }}>
-          <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
-              <Text> <AntDesign name="gift" color="#38635e" size="22" /> </Text>
-              <Text> Rewards </Text>
-            </View>
-
-            <View>
-              <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-
-        <TouchableOpacity onPress={() => { navigation.navigate("settings") }}>
-          <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
-              <Text> <FontAwesome name="gears" color="#38635e" size="22" /> </Text>
-              <Text> Suggest Products </Text>
-            </View>
-
-            <View>
-              <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-
-        <TouchableOpacity onPress={() => { navigation.navigate("generalinfo") }}>
-          <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
-              <Text> <AntDesign name="infocirlceo" color="#38635e" size="22" /> </Text>
-              <Text> General info </Text>
-            </View>
-
-            <View>
-              <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-
-        <TouchableOpacity onPress={() => { navigation.navigate("notifications") }}>
-          <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between', paddingVertical: 22, borderBottomWidth: 1, borderBottomColor: "lightgray" }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
-              <Text> <AntDesign name="bells" color="#38635e" size="22" /> </Text>
-              <Text> Notifications </Text>
-            </View>
-
-            <View>
-              <Text> <FontAwesome name="angle-right" size="20" color="red" /> </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-
+        </View>
 
         <View>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: 'center', marginTop: "13%", width: "30%", margin: "0px auto", alignSelf: 'center', marginBottom: 8, }}>
-            <TouchableOpacity style={{ borderWidth: 1, borderRadius: 8, paddingVertical: 10, paddingHorizontal: 18 }}>
+            <TouchableOpacity style={{ borderWidth: 1, borderRadius: 8, paddingVertical: 10, paddingHorizontal: 18 }} onPress={handlelogout}>
               <Text style={{ fontWeight: 700, color: "#38635e", letterSpacing: 1 }}> Logout </Text>
             </TouchableOpacity>
           </View>

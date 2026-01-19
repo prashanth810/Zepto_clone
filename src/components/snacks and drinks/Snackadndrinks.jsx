@@ -1,16 +1,25 @@
 import { View, Text, FlatList, TouchableOpacity, Dimensions, Image } from 'react-native';
-import React from 'react';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import { Veggies } from '../../database/Databse'; // Make sure this matches the export
+import React, { useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { getallproductlist } from '../../redux/feactures/product page/ProductSlice';
 
 const Snackadndrinks = () => {
     const navigation = useNavigation();
     const screenWidth = Dimensions.get('window').width;
     const itemWidth = (screenWidth - 60) / 3;
 
+    const dispatch = useDispatch();
+
+    const { productlist, loading, error } = useSelector((state) => state.products);
+
+    useEffect(() => {
+        dispatch(getallproductlist());
+    }, [dispatch]);
+
+    console.log(productlist, '🧪 productlist');
     // Filter only snacksanddrinks
-    const snackItems = Veggies.filter(item => item.category === "snacks");
+    const veggies = productlist.filter(item => item.category === "veg");
 
     const renderCarditems = ({ item }) => {
         return (
@@ -35,7 +44,7 @@ const Snackadndrinks = () => {
                 </View>
 
                 <Text style={{ fontWeight: "600", fontSize: 12, color: "gray", textAlign: "center" }}>
-                    {item.title}
+                    {item.title || item.name}
                 </Text>
             </TouchableOpacity>
         );
@@ -44,11 +53,11 @@ const Snackadndrinks = () => {
     return (
         <View style={{ flex: 1, backgroundColor: "#fff", paddingBottom: 56 }}>
             <View style={{ marginVertical: 10, marginHorizontal: 10 }}>
-                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Snacks & Drinks</Text>
+                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Vegg pickles</Text>
             </View>
 
             <FlatList
-                data={snackItems}
+                data={veggies}
                 numColumns={3}
                 columnWrapperStyle={{ justifyContent: "space-between", marginHorizontal: 10, marginBottom: 15 }}
                 keyExtractor={(item, index) => index.toString()}

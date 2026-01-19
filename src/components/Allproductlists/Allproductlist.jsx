@@ -1,9 +1,10 @@
-import { View, Text, TouchableOpacity, Image, FlatList, Dimensions } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, Image, FlatList, Dimensions, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { Veggies } from '../../database/Databse';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { getallproductlist } from '../../redux/feactures/product page/ProductSlice';
 
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = screenWidth / 2 - 20;
@@ -14,14 +15,26 @@ const Allproductlist = () => {
     const navigation = useNavigation();
     const { category = "All" } = route.params || {};
 
+    const dispatch = useDispatch();
+
+    const { productlist, loading, error } = useSelector((state) => state.products);
+
+    useEffect(() => {
+        dispatch(getallproductlist());
+    }, []);
+
+    console.log(productlist, '🧪 productlist');
+
     // Get all unique categories from Veggies data
-    const allCategories = ["All", ...new Set(Veggies.map(item => item.category))];
+    const allCategories = ["All", ...new Set(productlist.map(item => item.category))];
 
     // Filter items based on active category
     const filteredItems = active === "All"
-        ? Veggies
-        : Veggies.filter(item => item.category === active);
-
+        ? productlist
+        : productlist.filter(item => item.category === active);
+    if (loading) {
+        return <ActivityIndicator style={{ flex: 1, alignItems: 'center', justifyContent: "center " }} />
+    }
     const renderItem = ({ item }) => (
         <TouchableOpacity onPress={() => navigation.navigate('singleproduct', { product: item })}
             style={{
@@ -30,7 +43,7 @@ const Allproductlist = () => {
                 paddingHorizontal: 10,
                 paddingVertical: 7,
                 margin: 8,
-                width: "44.5%",
+                width: "45%",
             }}
         >
             <Image
@@ -39,7 +52,7 @@ const Allproductlist = () => {
                 resizeMode="cover"
             />
             <View>
-                <Text style={{ fontWeight: "bold", fontSize: 11 }}>{item.title}</Text>
+                <Text style={{ fontWeight: "bold", fontSize: 11 }}>{item.title || item.name}</Text>
                 <Text style={{ color: 'gray', fontSize: 13 }}>₹{item.price}</Text>
             </View>
         </TouchableOpacity>
@@ -76,9 +89,9 @@ const Allproductlist = () => {
             <View style={{ flex: 1, flexDirection: "row" }}>
                 {/* Sidebar - Dynamically generated from Veggies data */}
                 <View style={{
-                    width: "25%",
-                    borderRightWidth: 1,
-                    borderColor: "lightgray",
+                    width: "20%",
+                    // borderRightWidth: 1,
+                    // borderColor: "lightgray",
                     paddingVertical: 10,
                     backgroundColor: '#fafafa'
                 }}>
@@ -113,7 +126,7 @@ const Allproductlist = () => {
                 </View>
 
                 {/* Product Grid */}
-                <View style={{ width: "75%", paddingTop: 10 }}>
+                <View style={{ width: "80%", paddingTop: 10 }}>
                     <FlatList
                         data={filteredItems}
                         renderItem={renderItem}

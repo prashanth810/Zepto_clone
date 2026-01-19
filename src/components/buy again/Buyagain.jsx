@@ -1,16 +1,30 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { View, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
+import React, { useEffect } from 'react'
 import { FlatList } from 'react-native-gesture-handler'
 import { Veggies } from '../../database/Databse'
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { getallproductlist } from '../../redux/feactures/product page/ProductSlice';
 
 
 const Buyagain = () => {
     const navigation = useNavigation();
 
+    const dispatch = useDispatch();
+
+    const { productlist, loading, error } = useSelector((state) => state.products);
+
+    useEffect(() => {
+        dispatch(getallproductlist());
+    }, []);
+
+    if (loading) {
+        return <ActivityIndicator style={{ flex: 1, alignItems: "center", justifyContent: 'center' }} />
+    }
+
     const buynow = [
-        ...Veggies.slice(0, 8),
+        ...productlist.slice(0, 8),
         { id: 'see-all', isSeeAll: true }
     ];
 
@@ -31,13 +45,13 @@ const Buyagain = () => {
         // Normal veggie item
         return (
             <TouchableOpacity style={{ backgroundColor: "#ededed", paddingHorizontal: 6, borderRadius: 14, paddingVertical: 10 }} onPress={() => { navigation.navigate("singleproduct", { product: item }) }}>
-                <Image source={{ uri: item.image }} width={100} height={100} style={{ margin: "auto", borderRadius: 10 }} />
+                <Image source={{ uri: item.image || "N/A" }} width={100} height={100} style={{ margin: "auto", borderRadius: 10 }} />
                 <View style={{ paddingTop: 8 }}>
-                    <Text style={{ fontSize: 12, fontWeight: '700' }}>{item.title}</Text>
-                    <Text style={{ fontSize: 11, fontWeight: '500' }}>{item.price}</Text>
+                    <Text style={{ fontSize: 12, fontWeight: '700' }}>{item.title || item.name}</Text>
+                    <Text style={{ fontSize: 11, fontWeight: '500' }}>{item.price || "N/A"}</Text>
                     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                        <Text style={{ fontSize: 11, fontWeight: '500' }}>${item.weight}</Text>
-                        <Text style={{ fontSize: 11, fontWeight: '500' }}>{item.ratting}</Text>
+                        <Text style={{ fontSize: 11, fontWeight: '500' }}>${item.weight || "N/A"}</Text>
+                        <Text style={{ fontSize: 11, fontWeight: '500' }}>{item.ratting || "N/A"}</Text>
                     </View>
                 </View>
             </TouchableOpacity>

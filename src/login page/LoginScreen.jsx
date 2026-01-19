@@ -7,172 +7,227 @@ import {
     TouchableOpacity,
     StyleSheet,
     Dimensions,
-    ToastAndroid,
-    Platform,
     Animated,
+    Alert,
+    ScrollView, // ✅ Added ScrollView explicitly instead of Animated.ScrollView
 } from 'react-native';
 import useKeyboardOffsetHeight from './Keyboardoffsetheight/Keyboardoffsetheight';
+import Mail from 'react-native-vector-icons/AntDesign';
+import Eye from 'react-native-vector-icons/Entypo';
+import axios from 'axios';
+import { BASE_URL } from '../config/Config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
 const LoginScreen = () => {
-    const [mobile, setMobile] = useState('');
+    const [email, setEmail] = useState("");
+    const [otp, setOtp] = useState(["", "", "", ""]);
+    const [step, setStep] = useState(1);
+    const [message, setMessage] = useState("");
+    const [token, setToken] = useState("");
+    const [messageType, setMessageType] = useState("info");
     const [loading, setLoading] = useState(false);
-    const [otpSent, setOtpSent] = useState(false);
-    const [otp, setOtp] = useState(['', '', '', '', '', '']);
-    const inputs = useRef([]);
+    const [secondsLeft, setSecondsLeft] = useState(0);
+    const otpRefs = [useRef(), useRef(), useRef(), useRef()];
+
     const navigation = useNavigation();
-
-    const showToast = (message) => {
-        if (Platform.OS === 'android') {
-            ToastAndroid.show(message, ToastAndroid.SHORT);
-        } else {
-            console.log('Toast:', message);
-        }
-    };
-
-    const handleSendOtp = () => {
-        if (mobile.length !== 10) {
-            showToast('Please enter a valid 10-digit mobile number.');
-            return;
-        }
-        setOtpSent(true);
-        showToast(`OTP sent to ${mobile}`);
-    };
-
-    const handleResendOtp = () => {
-        setOtp(['', '', '', '', '', '']);
-        inputs.current[0]?.focus();
-        showToast(`OTP resent to ${mobile}`);
-    };
-
-    const handleChange = (text, index) => {
-        if (/^\d?$/.test(text)) {
-            const newOtp = [...otp];
-            newOtp[index] = text;
-            setOtp(newOtp);
-            if (text && index < 5) {
-                inputs.current[index + 1]?.focus();
-            }
-        }
-    };
-
-    const handleKeyPress = (e, index) => {
-        if (e.nativeEvent.key === 'Backspace' && otp[index] === '' && index > 0) {
-            inputs.current[index - 1]?.focus();
-        }
-    };
-
-    const handleLogin = () => {
-        const enteredOtp = otp.join('');
-        if (enteredOtp.length !== 6) {
-            setLoading(false);
-            showToast('Please enter the full 6-digit OTP.');
-            return;
-        }
-        setTimeout(() => {
-            setLoading(true);
-            navigation.navigate("landing");
-        }, 800);
-        setLoading(false);
-        showToast('Login Successful!');
-    };
-
     const animatedValue = useRef(new Animated.Value(0)).current;
     const Keyboardoffsetheight = useKeyboardOffsetHeight();
 
     useEffect(() => {
         Animated.timing(animatedValue, {
-            toValue: Keyboardoffsetheight === 0 ? 0 : -Keyboardoffsetheight * 0.25,
+            toValue: Keyboardoffsetheight === 0 ? 0 : -Keyboardoffsetheight * 0.48,
             duration: 500,
             useNativeDriver: true,
         }).start();
     }, [Keyboardoffsetheight]);
 
+    useEffect(() => {
+        let timer;
+        if (secondsLeft > 0) {
+            timer = setInterval(() => {
+                setSecondsLeft((prev) => prev - 1);
+            }, 1000);
+        }
+        return () => clearInterval(timer);
+    }, [secondsLeft]);
+
+    const showMessage = (msg, type = "info") => {
+        setMessage(msg);
+        setMessageType(type);
+    };
+
+    const handleSendOtp = async () => {
+        setLoading(true);
+        try {
+            const res = await axios.post("https://pickles-ukal.onrender.com/api/mail/send-otp", { email });
+            showMessage(res.data.message, "success");
+            setStep(2);
+            setSecondsLeft(60); // start 1-minute countdown
+        } catch (err) {
+            showMessage(err.response?.data?.message || "Failed to send OTP", "error");
+        }
+        setLoading(false);
+    };
+
+    const handleVerifyOtp = async () => {
+        const otpCode = otp.join("");
+        if (otpCode.length !== 4) return showMessage("Enter all 4 digits", "error");
+        if (secondsLeft <= 0) return showMessage("OTP expired. Please resend.", "error");
+
+        setLoading(true);
+        try {
+            const res = await axios.post("https://pickles-ukal.onrender.com/api/mail/verify-otp", {
+                email,
+                otp: otpCode,
+            });
+            console.log(res, 'rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr')
+            await AsyncStorage.setItem("token", res.data.token);
+            await AsyncStorage.setItem("username", res.data.data.name);
+            await AsyncStorage.setItem("userId", res.data.data.userId);
+            setToken(res.data.token); // Set token to state if needed
+
+            navigation.navigate("bottomnavigator");
+            showMessage("✅ OTP verified & token saved!", "success");
+        }
+        catch (err) {
+            showMessage(err.response?.data?.message || "OTP verification failed", "error");
+        }
+        setLoading(false);
+    };
+
+    const handleOtpChange = (index, value) => {
+        const newOtp = [...otp];
+
+        if (value === "") {
+            newOtp[index] = "";
+            setOtp(newOtp);
+            if (index > 0) otpRefs[index - 1].current.focus(); // 👈 Move back on delete
+            return;
+        }
+
+        if (!/^[0-9]+$/.test(value)) return;
+
+        // If multiple digits are pasted (e.g., full OTP)
+        if (value.length > 1) {
+            const digits = value.slice(0, 4).split('');
+            digits.forEach((digit, i) => {
+                newOtp[i] = digit;
+            });
+            setOtp(newOtp);
+            if (digits.length === 4) otpRefs[3].current.blur();
+            return;
+        }
+
+        newOtp[index] = value;
+        setOtp(newOtp);
+        if (index < 3) otpRefs[index + 1].current.focus(); // 👈 Move next
+    };
+
+
+    const handleResend = () => {
+        setOtp(["", "", "", ""]);
+        handleSendOtp();
+    };
 
     return (
         <View style={styles.container}>
-            <Animated.ScrollView bounces={false}
-                style={{ transform: [{ translateY: animatedValue }] }}
-                contentContainerStyle={styles.subconatiner} keyboardShouldPersistTaps='handled'
-            >
-                {!otpSent ? (
-                    <View>
-                        <View style={{ paddingBottom: width * 0.15 }}>
-                            <Text style={styles.title}>Bepto</Text>
-                            <Text style={{ fontSize: width * 0.048, fontWeight: 500, color: "gray", }}> Groceries delivery in </Text>
-                            <Text style={{ fontSize: width * 0.044, fontWeight: 500, color: "gray", }}> <Text style={{ fontSize: 24, color: "white" }}>10</Text> minutes </Text>
-                        </View>
-                        <View style={[styles.inputContainer,]}>
-                            <Text style={styles.country}> +91 </Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Mobile Number"
-                                placeholderTextColor="#aaa"
-                                keyboardType="numeric"
-                                maxLength={10}
-                                value={mobile}
-                                onChangeText={setMobile}
-                            />
-                        </View>
-
-                        <View>
-                            {!otpSent && (
-                                <TouchableOpacity style={styles.sendOtpBtn} onPress={handleSendOtp}>
-                                    <Text style={styles.sendOtpText}>Send OTP</Text>
-                                </TouchableOpacity>
-                            )}
-                        </View>
+            <Animated.View style={{ transform: [{ translateY: animatedValue }] }}>
+                <ScrollView contentContainerStyle={styles.subconatiner} keyboardShouldPersistTaps='handled'>
+                    <View style={{ paddingBottom: width * 0.10 }}>
+                        <Text style={styles.title}>Pickles</Text>
+                        <Text style={{ fontSize: width * 0.042, fontWeight: "500", color: "gray" }}> Groceries delivery in </Text>
+                        <Text style={{ fontSize: width * 0.038, fontWeight: "500", color: "gray" }}> <Text style={{ fontSize: 24, color: "white" }}>10</Text> minutes </Text>
                     </View>
-                ) : (
-                    <View>
-                        {otpSent && (
-                            <>
-                                <View>
-                                    <Text style={{ color: "white", fontSize: 20, marginBottom: 20 }}> OTP Sended Register Number </Text>
-                                </View>
-                                <View style={styles.otpContainer}>
-                                    {otp.map((digit, index) => (
-                                        <TextInput
-                                            key={index}
-                                            ref={(ref) => (inputs.current[index] = ref)}
-                                            style={[styles.otpInput,
-                                            digit !== '' && styles.filledInput,]}
-                                            keyboardType="numeric"
-                                            maxLength={1}
-                                            value={digit}
-                                            onChangeText={(text) => handleChange(text, index)}
-                                            onKeyPress={(e) => handleKeyPress(e, index)}
-                                        />
-                                    ))}
-                                </View>
 
-                                <TouchableOpacity onPress={handleResendOtp}>
-                                    <Text style={styles.resendText}>Resend OTP</Text>
-                                </TouchableOpacity>
+                    {step === 1 && (
+                        <>
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.country}> <Mail name='mail' size={18} />  </Text>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Enter email..."
+                                    placeholderTextColor="#aaa"
+                                    keyboardType="email-address"
+                                    value={email}
+                                    onChangeText={setEmail} // ✅ Corrected from onChange + e.target
+                                />
+                            </View>
+                            <TouchableOpacity style={styles.sendOtpBtn} onPress={handleSendOtp}>
+                                <Text style={styles.sendOtpText}> {loading ? "Sending otp..." : "Send Otp"} </Text>
+                            </TouchableOpacity>
+                        </>
+                    )}
 
-                                <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                                    <Text style={styles.buttonText}>{loading ? "Login" : "Loading..."}</Text>
-                                </TouchableOpacity>
+                    {step === 2 && (
+                        <>
+                            <View style={styles.otpContainer}>
+                                {otp.map((digit, index) => (
+                                    <TextInput
+                                        key={index}
+                                        ref={otpRefs[index]}
+                                        value={digit}
+                                        onChangeText={(value) => handleOtpChange(index, value)}
+                                        maxLength={index === 0 ? 4 : 1} // Allow pasting on first box
+                                        style={[styles.otpInput,]}
+                                        keyboardType="number-pad"
+                                        selectionColor="#007AFF"
+                                    />
 
-                            </>
-                        )}
-                    </View>
-                )}
+                                ))}
+                            </View>
 
+                            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: 'space-between' }}>
+                                <Text> {messageType === "error" ? "Wrong Otp" : ""}</Text>
+                                {secondsLeft > 0 ? (
+                                    <Text
+                                        style={{
+                                            marginVertical: 15,
+                                            color: "white"
+                                        }}
+                                    >
+                                        {secondsLeft > 0
+                                            ? <Text> ⏳<Text style={{
+                                                color:
+                                                    secondsLeft <= 10
+                                                        ? "red"
+                                                        : secondsLeft <= 30
+                                                            ? "orange"
+                                                            : "green",
+                                            }}> {secondsLeft}  </Text></Text>
+                                            : "❌ OTP expired"}
+                                    </Text>
 
-                <View style={{ position: "absolute", bottom: 5, left: width * 0.14 }}>
-                    <Text style={{ color: "gray", fontSize: 12, textAlign: "center" }}> By continuing, Yet agree to our </Text>
-                    <Text style={{ paddingTop: 4, color: "gray" }}> Terms of Use  &  Privacy Policy </Text>
-                </View>
+                                ) : (
+                                    <TouchableOpacity onPress={handleResend}>
+                                        <Text style={styles.resendText}>Resend OTP</Text>
+                                    </TouchableOpacity>
+                                )}
 
-            </Animated.ScrollView>
+                            </View>
 
+                            <TouchableOpacity
+                                onPress={handleVerifyOtp} // ✅ Changed onClick to onPress
+                                disabled={loading || secondsLeft === 0}
+                                style={styles.button}
+                            >
+                                <Text style={styles.buttonText}>{loading ? "Verifying..." : "Verify OTP"}</Text>
+                            </TouchableOpacity>
+                        </>
+                    )}
 
+                    {/* {step === 3 && <Text style={{ color: "green" }}>🎉 OTP verified. You're logged in!</Text>}
+                    {message && (
+                        <Text style={{ color: messageType === "error" ? "red" : "green", marginTop: 10, textAlign: 'center' }}>{message}</Text>
+                    )} */}
+                </ScrollView>
+            </Animated.View>
         </View>
     );
 };
 
+// ✅ Styles kept untouched
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -183,22 +238,18 @@ const styles = StyleSheet.create({
     subconatiner: {
         flexGrow: 1,
         justifyContent: 'center',
-        // alignItems: 'center',
-        // marginBottom: 20,
     },
     title: {
-        fontSize: width * 0.14,
+        fontSize: width * 0.12,
         fontWeight: 'bold',
         color: "#fff",
-        paddingBottom: width * 0.04,
-        // textAlign: 'center',
-        // marginBottom: height * 0.05,
+        paddingBottom: width * 0.02,
     },
     inputContainer: {
         position: 'relative',
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: height * 0.03,
+        marginBottom: height * 0.02,
         paddingVertical: height * 0.006,
         borderColor: 'gray',
         borderWidth: 1,
@@ -210,9 +261,10 @@ const styles = StyleSheet.create({
     input: {
         width: width * 100,
         color: "white",
-        fontWeight: 400,
-        fontSize: 16,
-        paddingHorizontal: 10
+        fontWeight: "400",
+        fontSize: 12,
+        paddingHorizontal: 10,
+        height: height * 0.05,
     },
     country: {
         color: "white",
@@ -221,6 +273,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 6
     },
     sendOtpBtn: {
+        marginTop: 5,
         paddingHorizontal: 10,
         paddingVertical: 14,
         backgroundColor: '#007AFF',
@@ -230,12 +283,12 @@ const styles = StyleSheet.create({
     sendOtpText: {
         color: '#fff',
         fontSize: width * 0.045,
-        fontWeight: 500,
+        fontWeight: "500",
         letterSpacing: 1,
     },
     resendText: {
         color: '#007AFF',
-        textAlign: 'right',
+        textAlign: 'center',
         marginVertical: height * 0.02,
     },
     button: {
@@ -253,24 +306,20 @@ const styles = StyleSheet.create({
     },
     otpContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        alignItems: 'center',
+        columnGap: 30,
         marginTop: height * 0.02,
     },
     otpInput: {
         width: width * 0.12,
         height: height * 0.06,
-        borderWidth: 2,
+        borderWidth: 1,
         borderColor: 'gray',
-        borderRadius: 30,
+        borderRadius: 10,
         textAlign: 'center',
         fontSize: width * 0.05,
         backgroundColor: 'transparent',
         color: "white",
-    },
-    filledInput: {
-        backgroundColor: '#a0e8af', // green background for filled input
-        borderColor: 'green',
-        color: "black",
     },
 });
 

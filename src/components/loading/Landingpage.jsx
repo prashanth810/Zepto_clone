@@ -13,6 +13,8 @@ import { useNavigation } from '@react-navigation/native';
 import Buyagain from '../buy again/Buyagain';
 import Buy from '../buy again/Buy';
 import Maxsaving from '../max saving/Maxsaving';
+import User from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Landingpage = () => {
     const [status, setStatus] = useState("bepto");
@@ -24,6 +26,8 @@ const Landingpage = () => {
         'Search for "drinks"',
     ];
     const [placeholderIndex, setPlaceholderIndex] = useState(0);
+    const [token, setToken] = useState("");
+    const [popup, setPopup] = useState(0);
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -33,6 +37,8 @@ const Landingpage = () => {
 
         return () => clearInterval(interval);
     }, []);
+
+
 
     return (
         <ScrollView style={{ flex: 1, marginBottom: 70 }} showsVerticalScrollIndicator={false}>
@@ -107,13 +113,12 @@ const Landingpage = () => {
                                 {/* Custom Header */}
                                 <View style={{
                                     paddingTop: 18,
-                                    paddingBottom: 8,
                                 }}>
 
-                                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginHorizontal: 15, }}>
+                                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginHorizontal: 15, paddingBottom: 8, }}>
                                         <View style={{ flexDirection: "row", alignItems: "center", columnGap: 10 }}>
                                             <View>
-                                                <TouchableOpacity onPress={() => { navigation.navigate("profile") }}>
+                                                <TouchableOpacity onPress={() => { navigation.navigate("profile") }} >
                                                     <Text> <FontAwesome name='user-circle-o' size="36" style={{ color: status === "bepto" ? 'white' : "#38635e", }} /> </Text>
                                                 </TouchableOpacity>
                                             </View>
@@ -131,12 +136,6 @@ const Landingpage = () => {
 
                                         </View>
 
-                                        <View>
-                                            <TouchableOpacity style={{ backgroundColor: status === "bepto" ? "white" : "#f0fff1", elevation: 10, borderRadius: 30, paddingHorizontal: 12, paddingVertical: 3 }}>
-                                                <Text style={{ color: "#38635e", fontSize: 11, fontWeight: 600 }}> RENEW </Text>
-                                                <Text style={{ color: "red", fontSize: 11, fontWeight: 600, textAlign: "center" }}> pass </Text>
-                                            </TouchableOpacity>
-                                        </View>
                                     </View>
                                 </View>
                             </View>

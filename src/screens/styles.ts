@@ -469,7 +469,7 @@ export const styles = StyleSheet.create({
 
   orderdspage: {
     marginHorizontal: 10,
-    marginVertical: 8,
+    marginVertical: 6,
   },
   orders: {
     borderWidth: 1,
@@ -597,12 +597,23 @@ export const styles = StyleSheet.create({
   addButton: {
     borderWidth: 1,
     borderColor: 'red',
-    paddingHorizontal: 8,
     paddingVertical: 6,
     borderRadius: 5,
     alignItems: 'center',
   },
   countText: {
     fontSize: 11,
+    color: 'red',
+  },
+  cartbtns: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  // pagenatation
+  pagenatation: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 10,
   },
 });

@@ -1,20 +1,32 @@
-import { View, Text, FlatList, TouchableOpacity, Dimensions, Image } from 'react-native';
-import React from 'react';
+import { View, Text, FlatList, TouchableOpacity, Dimensions, Image, ActivityIndicator } from 'react-native';
+import React, { useEffect } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Veggies, snacks } from '../../database/Databse';
 import { useNavigation } from '@react-navigation/native';
 import Snackadndrinks from '../snacks and drinks/Snackadndrinks';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useDispatch, useSelector } from 'react-redux';
+import { getallproductlist } from '../../redux/feactures/product page/ProductSlice';
 
 const Allcategories = () => {
     const navigation = useNavigation();
     const screenWidth = Dimensions.get('window').width;
     const itemWidth = (screenWidth - 60) / 3;
 
-    const uniqueCategories = [...new Set(Veggies.map(item => item.category))];
+    const dispatch = useDispatch();
+
+    const { productlist, loading, error } = useSelector((state) => state.products);
+
+    useEffect(() => {
+        dispatch(getallproductlist());
+    }, []);
+
+    console.log(productlist, '🧪 productlist');
+
+    const uniqueCategories = [...new Set(productlist.map(item => item.category))];
 
     const renderCarditems = ({ item }) => {
-        const firstItem = Veggies.find(product => product.category === item);
+        const firstItem = productlist.find(product => product.category === item);
 
         return (
             <TouchableOpacity
@@ -63,7 +75,7 @@ const Allcategories = () => {
             </View>
 
             <View style={{ marginVertical: 15, marginHorizontal: 10, }}>
-                <Text style={{ fontSize: 16, fontWeight: 600 }}> Grocery & Kitchen </Text>
+                <Text style={{ fontSize: 16, fontWeight: 600 }}> All Pickles for vg or nonveg </Text>
             </View>
 
             {/* Grid */}

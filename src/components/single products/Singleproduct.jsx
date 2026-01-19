@@ -1,6 +1,6 @@
 // Singleproduct.js
 import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -11,11 +11,13 @@ const Singleproduct = () => {
     const route = useRoute();
     const navigation = useNavigation();
     const { product } = route.params;
+    const [active, setActive] = useState(0);
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}
+            showsVerticalScrollIndicator={false}>
             {/* Header */}
-            <View style={styles.header}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 15, paddingHorizontal: 10, }}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Text>  <FontAwesome name='angle-left' size={22} color="#000" /> </Text>
                 </TouchableOpacity>
@@ -34,39 +36,56 @@ const Singleproduct = () => {
             <FlatList
                 data={product.images}
                 renderItem={({ item }) => (
-                    <View>
-                        <Image source={{ uri: item }} width={100} height={100} />
-                    </View>
+                    <>
+                        <View>
+                            <Image source={{ uri: item }} width={100} height={100} />
+                        </View>
+                    </>
+
                 )}
                 keyExtractor={(item, i) => i.toString()}
                 horizontal
                 pagingEnabled
             />
 
+            {/* <View style={styles.pagenatation}>
+                {product.images.map((item, i) => {
+                    return (<View
+                        key={i}
+                        style={[
+                            styles.dots,
+                            i === active && { width: 15, borderRadius: 20, backgroundColor: "purple" },
+                        ]}
+                    />
+                    )
+                })}
+            </View> */}
+
+
             {/* Product Details */}
             <View style={styles.detailsContainer}>
-                <Text style={styles.title}>{product.title}</Text>
+                <Text style={styles.title}>{product.title || product.name}</Text>
 
                 <View style={styles.priceContainer}>
-                    <Text style={styles.price}>₹{product.price}</Text>
-                    <Text style={styles.originalPrice}>₹{product.originalprice}</Text>
+                    <Text style={styles.price}>₹{product.price || "N/A"}</Text>
+                    <Text style={styles.originalPrice}>₹{product.originalprice || "N/A"}</Text>
                     <Text style={styles.discount}>
-                        {Math.round(((product.originalprice - product.price) / product.originalprice * 100))}% OFF
+                        {Math.round(((product.originalprice - product.price || "N/A") / product.originalprice * 100 || "N/A"))}% OFF
                     </Text>
                 </View>
 
                 <View style={styles.ratingContainer}>
                     <AntDesign name='star' size={16} color="#FFD700" />
-                    <Text style={styles.ratingText}>{product.ratting}</Text>
-                    <Text style={styles.deliveryText}>• Delivery in {product.delivertime} mins</Text>
+                    <Text style={styles.ratingText}>{product.ratting || "N/A"}</Text>
+                    <Text style={styles.deliveryText}>• Delivery in {product.delivertime || "N/A"} mins</Text>
                 </View>
 
-                <Text style={styles.weight}>Weight: {product.weight}</Text>
+                <Text style={styles.weight}>Weight: {product.weight || "N/A"}</Text>
 
                 {/* Product Description */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Description</Text>
-                    <Text style={styles.descriptionText}>{product.description}
+                    <Text style={styles.descriptionText}>{product.description || "N/A"}
                     </Text>
                 </View>
 
@@ -75,7 +94,7 @@ const Singleproduct = () => {
                     <Text style={styles.addToCartText}>Add to Cart</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView>
     );
 };
 

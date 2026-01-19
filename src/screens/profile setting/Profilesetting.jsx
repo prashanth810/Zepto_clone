@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { ScrollView, TextInput } from 'react-native-gesture-handler'
 import Icon from 'react-native-vector-icons/Ionicons'; // Native vector icons
@@ -55,8 +55,14 @@ const Profilesetting = () => {
                 </View>
             </View>
 
+            <View style={{ alignItems: "center", justifyContent: "center", marginTop: 30 }}>
+                <Image src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMrofvwFtIIx18JLx6kIDzk67mvc8CbAOFVFZ3ByG7hfEhvdFMmkrM3w0iU_gquXNdKww&usqp=CAU"
+                    alt="Example" style={{ width: 100, height: 100, borderRadius: 50 }} />
+            </View>
+
+
             <View style={styles.form}>
-                <View style={styles.inpview}>
+                <View>
                     <Text style={styles.promise}> Name * </Text>
                     <TextInput placeholder='prashanth' style={styles.textinputs}
                         placeholderTextColor={"#4e856a"}
@@ -115,10 +121,9 @@ export default Profilesetting
 const styles = StyleSheet.create({
     form: {
         padding: 20,
+        rowGap: 14,
     },
-    inpview: {
-        marginTop: 25,
-    },
+
     textinputs: {
         paddingVertical: 15,
         paddingHorizontal: 15,
